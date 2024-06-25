@@ -1,0 +1,41 @@
+﻿@page "/modal-demo"
+
+<h3>Modal Demo</h3>
+<button class="btn-primary btn" @onclick="ShowModalAsync">Test here</button>
+<button class="btn-primary btn" @onclick="ShowConfirmModalAsync">Test confirm here</button>
+@code {
+    [CascadingParameter]
+    public IModalService ModalObj { get; set; } = default!;
+
+    private async Task ShowModalAsync()
+    {
+        var modalParams = new ModalParameters().Add(nameof(DisplayModal.Message), "Just testing.....");
+        var modal = ModalObj.Show<DisplayModal>("Test", modalParams);
+        var result = await modal.Result;
+
+        if (result.Cancelled)
+        {
+            Console.WriteLine("Modal was cancelled");
+        }
+        else if (result.Confirmed)
+        {
+            Console.WriteLine("Modal was closed");
+        }
+    }
+
+    private async Task ShowConfirmModalAsync()
+    {
+        var modalParams = new ModalParameters().Add(nameof(DisplayConfirm.Message), "Just testing.....");
+        var modal = ModalObj.Show<DisplayConfirm>("Test", modalParams);
+        var result = await modal.Result;
+
+        if (result.Cancelled)
+        {
+            Console.WriteLine("Modal was cancelled");
+        }
+        else if (result.Confirmed)
+        {
+            Console.WriteLine("Modal was closed");
+        }
+    }
+}

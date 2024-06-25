@@ -1,0 +1,59 @@
+﻿@page "/products"
+@inject IProductService ProductService;
+@inject ICategoryService CategoryService;
+@inject NavigationManager Navi;
+
+<h3>Product</h3>
+<Query ProductName="@ProductName" Categories = "@Categories" OnClickCallBack="@GetProductAsync"></Query>
+<Detail Products="@Products"
+        OnClickCallBack="@GoToAddPage"
+        OnClickReLoadDataCallBack="@OnInitializedAsync"
+        OnClickGoToModifyCallBack="@GoToModification"
+        OnClickDeleteCallBack="@DeleteAsync"></Detail>
+
+@code {
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    protected List<ProductDto>? Products { get; set; }
+
+    protected List<CategoryDto> Categories { get; set; } = default!;
+
+    private string? ProductName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Products = await ProductService.GetProductsAsync();
+        Categories = new List<CategoryDto>();
+        Categories = await CategoryService.GetAllCategoriesAsync();
+    }
+
+    protected async Task GetProductAsync(ProductQueryDto productQueryDto)
+    {
+        ProductName = productQueryDto.Name;
+        Products = await ProductService.GetProductsAsync(productQueryDto);
+    }
+
+    protected void GoToAddPage()
+    {
+        Navi.NavigateTo("/products/add");
+    }
+
+    protected void GoToModification(int id)
+    {
+        Navi.NavigateTo($"/products/modification/{id}");
+    }
+
+    protected async Task DeleteAsync(int id)
+    {
+        var modalParameters = new ModalParameters().Add(nameof(DisplayConfirm.Message), "確定要刪除？");
+        var modal = ModalService.Show<DisplayConfirm>("警告", modalParameters);
+        var modalResult = await modal.Result;
+
+        if (modalResult.Confirmed)
+        {
+            await ProductService.DeleteAsync(id);
+            Products = await ProductService.GetProductsAsync();
+        }
+    }
+}

@@ -1,0 +1,82 @@
+﻿@page "/categories/add"
+@inject ICategoryService CategoryService;
+@inject NavigationManager Navi;
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <span>新增</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Name</span>
+            </div>
+            <div class="col-sm-10">
+                <input class="form-control" type="text" @bind="Category.Name" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Description</span>
+            </div>
+            <div class="col-sm-10">
+                <textarea class="form-control" @bind="Category.Description" placeholder="descriptions...."></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-sm-12">
+                <button class="btn btn-success" @onclick="AddCategoryAsync">
+                    <span>新增</span>
+                </button>
+                <button class="btn btn-info" @onclick="GoBack">
+                    <span>返回</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    public CategoryDto Category { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        Category = new CategoryDto();
+    }
+
+    private async Task AddCategoryAsync()
+    {
+        var modalTitle = string.Empty;
+        var modalParameters = new ModalParameters();
+        try
+        {
+            await CategoryService.AddAsync(Category);
+            modalTitle = "提示";
+            modalParameters.Add(nameof(DisplayModal.Message), "新增成功");
+            Navi.NavigateTo("/categories");
+        }
+        catch (Exception ex)
+        {
+            modalTitle = "警告";
+            modalParameters.Add(nameof(DisplayModal.Message), $"新增失敗。原因： {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            _ = ModalService.Show<DisplayModal>(modalTitle, modalParameters);
+        }
+    }
+
+    private void GoBack()
+    {
+        Navi.NavigateTo("/categories");
+    }
+}

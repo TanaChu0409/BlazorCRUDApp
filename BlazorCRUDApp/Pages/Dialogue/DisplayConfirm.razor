@@ -1,0 +1,23 @@
+﻿<div>
+    <p>@Message</p>
+
+    <button class="btn btn-primary" @onclick="ConfirmAsync">確認</button>
+    <button class="btn btn-danger" @onclick="CancelAsync">取消</button>
+</div>
+@code {
+    [CascadingParameter]
+    protected BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    private async Task ConfirmAsync()
+    {
+        await BlazoredModal.CloseAsync();
+    }
+
+    private async Task CancelAsync()
+    {
+        await BlazoredModal.CancelAsync();
+    }
+}

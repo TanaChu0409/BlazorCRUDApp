@@ -1,0 +1,9 @@
+﻿.vs
+BlazorCRUDApp/bin
+BlazorCRUDApp/obj
+BlazorCRUDApp.Api/bin
+BlazorCRUDApp.Api/log
+BlazorCRUDApp.Api/obj
+BlazorCRUDApp.Models/bin
+BlazorCRUDApp.Models/obj
+*.user

@@ -1,0 +1,94 @@
+﻿@page "/categories/edit/{Id:int}"
+@inject ICategoryService CategoryService;
+@inject NavigationManager Navi;
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <span>修改</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Id</span>
+            </div>
+            <div class="col-sm-10">
+                <span>@Category.Id</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Name</span>
+            </div>
+            <div class="col-sm-10">
+                <input class="form-control" type="text" @bind="Category.Name" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Description</span>
+            </div>
+            <div class="col-sm-10">
+                <textarea @bind="Category.Description"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-sm-12">
+                <button class="btn btn-success" @onclick="SaveAsync">
+                    <span>儲存</span>
+                </button>
+                <button class="btn btn-info" @onclick="GoBack">
+                    <span>返回</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    public CategoryDto Category { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Category = new CategoryDto();
+        Category = await CategoryService.GetCategoryAsync(Id);
+    }
+
+    private async Task SaveAsync()
+    {
+        var modalTitle = string.Empty;
+        var modalParameters = new ModalParameters();
+        try
+        {
+            await CategoryService.UpdateAsync(Category);
+            modalTitle = "提示";
+            modalParameters.Add(nameof(DisplayModal.Message), "更新成功");
+        }
+        catch (Exception ex)
+        {
+            modalTitle = "警告";
+            modalParameters.Add(nameof(DisplayModal.Message), $"更新失敗。原因： {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            _ = ModalService.Show<DisplayModal>(modalTitle, modalParameters);
+        }
+    }
+
+    private void GoBack()
+    {
+        Navi.NavigateTo("/categories");
+    }
+}

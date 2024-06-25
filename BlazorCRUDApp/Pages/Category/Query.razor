@@ -1,0 +1,36 @@
+﻿<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <span>查詢條件</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Name</span>
+            </div>
+            <div class="col-sm-10">
+                <input class="form-control" type="text" @bind="@CategoryName" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-7">
+                <button type="button" class="btn btn-info" @onclick="QueryCategoriesAsync">查詢</button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string? CategoryName { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> OnClickQueryCallBack { get; set; }
+
+    private async Task QueryCategoriesAsync()
+    {
+        await OnClickQueryCallBack.InvokeAsync(CategoryName);
+    }
+}

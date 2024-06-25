@@ -1,0 +1,68 @@
+﻿<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-10">
+                <span>查詢結果</span>
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-warning" @onclick="GoToCreatePageAsync">
+                    <span>新增</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Categories == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <h3>Category Detail</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Categories)
+                    {
+                        <tr>
+                            <td>@category.Id</td>
+                            <td>@category.Name</td>
+                            <td>
+                                <div class="text-wrap">
+                                    <button class="btn btn-light" @onclick="(() => GoToEditPageAsync(category.Id))">編輯</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<CategoryDto> Categories { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnClickGoToCreate { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnClickGoToEdit { get; set; }
+
+    private async Task GoToCreatePageAsync()
+    {
+        await OnClickGoToCreate.InvokeAsync();
+    }
+
+    private async Task GoToEditPageAsync(int id)
+    {
+        await OnClickGoToEdit.InvokeAsync(id);
+    }
+}

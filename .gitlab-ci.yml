@@ -1,0 +1,13 @@
+stages:          # List of stages for jobs, and their order of execution
+  - build
+
+build-job:       # This job runs in the build stage, which runs first.
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:6.0
+  variables:
+    GIT_DEPTH: "0"
+  tags:
+    - kh_runner
+  script:
+    - "dotnet restore"
+    - "dotnet build --no-restore"

@@ -1,0 +1,40 @@
+﻿@page "/categories"
+@inject ICategoryService CategoryService;
+@inject NavigationManager Navi;
+
+<h3>Index</h3>
+<Query CategoryName="@CategoryName" OnClickQueryCallBack="QueryCategoriesAsync"></Query>
+<Detail Categories="@Categories" OnClickGoToCreate="GoToCreatePage" OnClickGoToEdit="GoToEditPage"></Detail>
+@code {
+    protected List<CategoryDto> Categories { get; set; } = default!;
+
+    protected string? CategoryName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = await CategoryService.GetAllCategoriesAsync();
+    }
+
+    protected async Task QueryCategoriesAsync(string? categoryName)
+    {
+        CategoryName = categoryName;
+        if (string.IsNullOrWhiteSpace(categoryName))
+        {
+            Categories = await CategoryService.GetAllCategoriesAsync();
+        }
+        else
+        {
+            Categories = await CategoryService.GetCategoriesAsync(new CategoryQueryDto(categoryName));
+        }
+    }
+
+    protected void GoToCreatePage()
+    {
+        Navi.NavigateTo("/categories/add");
+    }
+
+    protected void GoToEditPage(int id)
+    {
+        Navi.NavigateTo($"/categories/edit/{id}");
+    }
+}

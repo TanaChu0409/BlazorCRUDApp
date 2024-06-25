@@ -1,0 +1,107 @@
+﻿@page "/products/add"
+@inject IProductService ProductService;
+@inject ICategoryService CategoryService;
+@inject NavigationManager Navi;
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <span>新增</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-2">
+                Category
+            </div>
+            <div class="col-sm-10">
+                <select class="form-control" @bind="Product.CategoryGuid">
+                    @foreach (var category in Categories)
+                    {
+                        <option value="@category.Uuid">@category.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Name</span>
+            </div>
+            <div class="col-sm-10">
+                <input class="form-control" type="text" @bind="Product.Name" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Amount</span>
+            </div>
+            <div class="col-sm-10">
+                <input class="form-control" type="number" min="0"  @bind="Product.Amount" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                <span>Price</span>
+            </div>
+            <div class="col-sm-10">
+                <input class="form-control" type="number" min="0" @bind="Product.Price" />
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-sm-12">
+                <button class="btn btn-success" @onclick="AddProductAsync">
+                    <span>新增</span>
+                </button>
+                <button class="btn btn-info" @onclick="GoBack">
+                    <span>返回</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [CascadingParameter]
+    public IModalService ModalService { get; set; } = default!;
+
+    public ProductDto Product { get; set; } = default!;
+
+    public List<CategoryDto> Categories { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Product = new ProductDto();
+        Categories = new List<CategoryDto>();
+        Categories = await CategoryService.GetAllCategoriesAsync();
+    }
+
+    private async Task AddProductAsync()
+    {
+        var modalTitle = string.Empty;
+        var modalParameters = new ModalParameters();
+        try
+        {
+            await ProductService.AddAsync(Product);
+            modalTitle = "提示";
+            modalParameters.Add(nameof(DisplayModal.Message), "新增成功");
+            Navi.NavigateTo("/products");
+        }
+        catch (Exception ex)
+        {
+            modalTitle = "警告";
+            modalParameters.Add(nameof(DisplayModal.Message), $"新增失敗。原因： {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            _ = ModalService.Show<DisplayModal>(modalTitle, modalParameters);
+        }
+    }
+
+    private void GoBack()
+    {
+        Navi.NavigateTo("/products");
+    }
+}

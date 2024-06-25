@@ -1,0 +1,92 @@
+﻿<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-10">
+                <span>查詢結果</span>
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-warning" @onclick="GoToAddPageAsync">
+                    <span>新增</span>
+                </button>
+                <button class="btn btn-outline-secondary" @onclick="ReLoadDataAsync"><span>更新</span></button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Products == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <h3>Product Detail</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Category</th>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Products)
+                    {
+                        <tr>
+                            <td>@product.Id</td>
+                            <td>@product.CategoryName</td>
+                            <td>@product.Name</td>
+                            <td>@product.Amount</td>
+                            <td>@product.Price?.ToString("C")</td>
+                            <td>
+                                <div class="text-wrap">
+                                    <button class="btn btn-light" @onclick="() => GoToModificationAsync(product.Id)">編輯</button>
+                                    <button class="btn btn-danger" @onclick="() => DeleteAsync(product.Id)">刪除</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public List<ProductDto>? Products { get; set; }
+
+    [Parameter]
+    public EventCallback OnClickCallBack { get; set; }
+
+    [Parameter]
+    public EventCallback OnClickReLoadDataCallBack { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnClickGoToModifyCallBack { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnClickDeleteCallBack { get; set; }
+
+    private async Task GoToAddPageAsync()
+    {
+        await OnClickCallBack.InvokeAsync();
+    }
+
+    private async Task ReLoadDataAsync()
+    {
+        await OnClickReLoadDataCallBack.InvokeAsync();   
+    }
+
+    private async Task GoToModificationAsync(int id)
+    {
+        await OnClickGoToModifyCallBack.InvokeAsync(id);
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        await OnClickDeleteCallBack.InvokeAsync(id);
+    }
+}

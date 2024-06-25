@@ -1,0 +1,26 @@
+[
+  {
+    "Id": 1,
+    "Name": "iPhone 13 Pro 256GB",
+    "Amount": 1000,
+    "Price": 35000
+  },
+  {
+    "Id": 2,
+    "Name": "iPhone 14 Pro 256GB",
+    "Amount": 1000,
+    "Price": 36880
+  },
+  {
+    "Id": 3,
+    "Name": "iPhone 13 256GB",
+    "Amount": 1000,
+    "Price": 32000
+  },
+  {
+    "Id": 4,
+    "Name": "iPhone 14 256GB",
+    "Amount": 1000,
+    "Price": 33000
+  }
+]
